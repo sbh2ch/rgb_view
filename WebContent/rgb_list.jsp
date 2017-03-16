@@ -104,7 +104,8 @@
 				<h3>
 					RGB Viewer. <br> <span class="color1">select a date</span>
 				</h3>
-				<p>Select the observation date and then choose the image you want to see. A date input field supports direct input and datepicker.</p>
+				<p>Select the observation date and then choose the image you want to see.</p>
+				<p>A date input field supports direct input (MM/DD/YYYY) and datepicker.</p>
 				<form>
 					<div class="row">
 						<div class="col-sm-6">
@@ -123,10 +124,14 @@
 							<fieldset>
 								<legend>RGB Image</legend>
 								<div class="row">
-<!-- 									 <div class="slider-nav"> -->
-<!-- 				                        <div class="left"><i class="fa fa-angle-left"></i></div> -->
-<!-- 				                        <div class="right"><i class="fa fa-angle-right"></i></div> -->
-<!-- 				                    </div> -->
+									<div class="slider-nav">
+										<div class="left">
+											<i class="fa fa-angle-left"></i>
+										</div>
+										<div class="right">
+											<i class="fa fa-angle-right"></i>
+										</div>
+									</div>
 									<div class="col-sm-12">
 										<div class="img-box">
 											<a href="/status/orImg?path=${recentDate}&realName=${recentImage}" data-gal="prettyPhoto[galleryName]" class="img-open"><i class="fa fa-search-plus"></i></a> <img src="/status/smImg?path=${recentDate}&realName=${recentImage}" class="img-responsive" alt="">
@@ -192,10 +197,10 @@
 
 	<script type="text/javascript">
 		$(document).ready(function() {
+			var imgIdx = ${imageIdx};
 
 			/* datePicker 허용 키 외 입력 방지 코드 */
 			$("#dPicker").keydown(function(e) {
-					console.log(e.keyCode);
 				if (e.keyCode <= 57 && e.keyCode >= 48) { // qwerty 0-9 제외
 					return;
 				} else if (e.keyCode <= 105 && e.keyCode >= 96) { // 키패드 0-9 제외
@@ -214,6 +219,13 @@
 					}
 				}
 			});
+			
+			$(".slider-nav .left").click(function(e){
+				console.log('left click');
+			});
+			$(".slider-nav .right").click(function(e){
+				console.log('right click');
+			});
 
 			/* datePick 이후 노드 동적 생성 및 동적 이벤트 생성 */
 			$(".hasDatepicker").change(function(event) {
@@ -228,34 +240,47 @@
 					success : function(json) {
 						var $selectBar = $(".form-group > div > button");
 						var $selectTime = $selectBar.children().eq(0);
+						var $legend = $("fieldset > legend");
 						var data = JSON.parse(json);
+						
+						imgIdx = data.size -1;
 
+						/* 불러온 JSON으로 selectPicker 생성 */
 						$("ul.dropdown-menu").html(data.menu);
 						$('select').html(data.select);
 						$('select').selectpicker();
 						
-						var $lastChild = $(".timeSelect > option:last-child");
+						/* 선택 일자 중 가장 늦은시간 사진 불러오기 만약 자료가 없다면 Select Time을 불러온다 */
+						var $lastChild = $("select.timeSelect").children().eq(imgIdx);
 						$selectBar.attr("title", $lastChild.html());
 						$selectTime.html($lastChild.html());
 						
-						if (data.size === '1') { // 만약 데이터가 없다면 image select 불가능
+						/* legend 필드값 변경 */
+						$legend.html($lastChild.html());
+						
+						/* 버튼 활성화 판단 */
+						console.log('data size',data.size);
+						if (data.size == '1') { // 만약 데이터가 없다면 image select 불가능
 							$(".timeSelect").attr("disabled", "disabled");
 							$(".form-group > div").addClass("disabled");
 							$(".form-group > div > button").addClass("disabled");
+							$legend.html("RGB Image");
 						} else { // 데이터가 있다면 image select 가능
+							console.log('이미지 변화 -> ',data.size);
 							$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + $lastChild.html());
 							$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + $lastChild.html());
 							$(".timeSelect").removeAttr("disabled");
 							$(".form-group > div").removeClass("disabled");
 							$(".form-group > div > button").removeClass("disabled");
 						}
-
+						
+						/* 동적 DOM 이벤트 할당 */
 						$(document).on("change", $selectTime, function(e) {
 							var fileName = $selectTime.html();
 							if (fileName !== 'Select Time') {
-								$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + $selectTime.html());
-								$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + $selectTime.html());
-								
+								$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + fileName);
+								$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + fileName);
+								$legend.html($selectTime.html());
 							} else {
 // 								$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + $selectTime.html());
 // 								$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + $selectTime.html());

@@ -16,9 +16,12 @@ public class RGBListController extends HttpServlet {
 		File recentMonth = dir.listFiles()[dir.listFiles().length - 1];
 		File recentDay = recentMonth.listFiles()[recentMonth.listFiles().length - 1];
 		File recentImage = recentDay.listFiles()[recentDay.listFiles().length - 1];
-		
+		System.out.println(recentDay.listFiles().length);
+
 		request.setAttribute("recentDate", "/" + recentMonth.getName() + "/" + recentDay.getName() + "/");
 		request.setAttribute("recentImage", recentImage.getName());
+		request.setAttribute("imageIdx", recentDay.listFiles().length + 1);
+
 		request.getRequestDispatcher("/rgb_list.jsp").forward(request, response);
 	}
 }
