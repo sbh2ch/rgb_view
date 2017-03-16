@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 public class RGBListController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		File dir = new File("f:/br_kosc");
-		File recentMonth = dir.listFiles()[dir.listFiles().length - 2];
+		File recentMonth = dir.listFiles()[dir.listFiles().length - 1];
 		File recentDay = recentMonth.listFiles()[recentMonth.listFiles().length - 1];
 		File recentImage = recentDay.listFiles()[recentDay.listFiles().length - 1];
 		
