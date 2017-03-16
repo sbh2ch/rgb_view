@@ -115,7 +115,7 @@
 						</div>
 						<div class="col-sm-6">
 							<div class="form-group">
-								<select class="timeSelect" tabindex="-98" disabled="disabled">
+								<select class="timeSelect" tabindex="-98">
 									<option>Select Time</option>
 								</select>
 							</div>
@@ -134,7 +134,7 @@
 									</div>
 									<div class="col-sm-12">
 										<div class="img-box">
-											<a href="/status/orImg?path=${recentDate}&realName=${recentImage}" data-gal="prettyPhoto[galleryName]" class="img-open"><i class="fa fa-search-plus"></i></a> <img src="/status/smImg?path=${recentDate}&realName=${recentImage}" class="img-responsive" alt="">
+											<a href="images/empty.png" data-gal="prettyPhoto[galleryName]" class="img-open"><i class="fa fa-search-plus"></i></a> <img src="images/empty.png" class="img-responsive" alt="">
 										</div>
 									</div>
 								</div>
@@ -198,6 +198,9 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			var imgIdx = ${imageIdx};
+			var $selectBar = $(".form-group > div > button");
+			var $selectTime = $selectBar.children().eq(0);
+			
 
 			/* datePicker 허용 키 외 입력 방지 코드 */
 			$("#dPicker").keydown(function(e) {
@@ -238,8 +241,8 @@
 						path : date // date 값 json 으로 전달
 					},
 					success : function(json) {
-						var $selectBar = $(".form-group > div > button");
-						var $selectTime = $selectBar.children().eq(0);
+						$selectBar = $(".form-group > div > button");
+						$selectTime = $selectBar.children().eq(0);
 						var $legend = $("fieldset > legend");
 						var data = JSON.parse(json);
 						
@@ -261,12 +264,13 @@
 						/* 버튼 활성화 판단 */
 						console.log('data size',data.size);
 						if (data.size == '1') { // 만약 데이터가 없다면 image select 불가능
+							$("div.img-box > a").attr("href", "images/empty.png");
+							$("div.img-box > img").attr("src", "images/empty.png");
 							$(".timeSelect").attr("disabled", "disabled");
 							$(".form-group > div").addClass("disabled");
 							$(".form-group > div > button").addClass("disabled");
 							$legend.html("RGB Image");
 						} else { // 데이터가 있다면 image select 가능
-							console.log('이미지 변화 -> ',data.size);
 							$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + $lastChild.html());
 							$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + $lastChild.html());
 							$(".timeSelect").removeAttr("disabled");
@@ -282,6 +286,8 @@
 								$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + fileName);
 								$legend.html($selectTime.html());
 							} else {
+								$("div.img-box > a").attr("href", "images/empty.png");
+								$("div.img-box > img").attr("src", "images/empty.png");
 // 								$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + $selectTime.html());
 // 								$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + $selectTime.html());
 							}
