@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kosc.br.goci.dataMapper">
+
+	<select id="selectImage" parameterType="img" resultType="img">
+		select *
+		from br_kosc.rgb_file
+		where
+		name=#{name} and
+		path=#{path}
+	</select>
+
+	<insert id="insertImage" parameterType="img">
+		insert into
+		br_kosc.rgb_file
+		values(
+			null,
+			#{name},
+			#{path}
+		)
+	</insert>
+</mapper>
