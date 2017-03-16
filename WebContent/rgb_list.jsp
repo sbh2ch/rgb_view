@@ -137,6 +137,37 @@
 											<a href="images/empty.png" data-gal="prettyPhoto[galleryName]" class="img-open"><i class="fa fa-search-plus"></i></a> <img src="images/empty.png" class="img-responsive" alt="">
 										</div>
 									</div>
+									<div class="col-sm-12">
+								        <div class="carousel slide" id="carousel">
+								            <!-- Indicators -->
+								            <ol class="carousel-indicators">
+								                <li class="active" data-slide-to="0" data-target="#carousel"></li>
+								                <li data-slide-to="1" data-target="#carousel"></li>
+								            </ol>
+								
+								            <!-- Wrapper for slides -->
+								            <div class="carousel-inner">
+								                <div class="item active">
+								                    <div class="img-box">
+														<a href="images/empty.png" data-gal="prettyPhoto[galleryName]" class="img-open"><i class="fa fa-search-plus"></i></a> <img src="images/empty.png" class="img-responsive" alt="">
+													</div>
+								                </div>
+								                <div class="item">
+								                    <div class="img-box">
+														<a href="images/empty.png" data-gal="prettyPhoto[galleryName]" class="img-open"><i class="fa fa-search-plus"></i></a> <img src="images/empty.png" class="img-responsive" alt="">
+													</div>
+								                </div>
+								            </div>
+								
+								            <!-- Controls -->
+								            <a class="left carousel-control" data-slide="prev" href="#carousel">
+								                <i class="fa fa-angle-left"></i>
+								            </a>
+								            <a class="right carousel-control" data-slide="next" href="#carousel">
+								                <i class="fa fa-angle-right"></i>
+								            </a>
+								        </div>
+								    </div>
 								</div>
 							</fieldset>
 						</div>
@@ -200,6 +231,10 @@
 			var imgIdx = ${imageIdx};
 			var $selectBar = $(".form-group > div > button");
 			var $selectTime = $selectBar.children().eq(0);
+			$('.carousel').carousel({
+				interval: false,
+				wrap: false
+			});
 			
 
 			/* datePicker 허용 키 외 입력 방지 코드 */
