@@ -123,6 +123,10 @@
 							<fieldset>
 								<legend>RGB Image</legend>
 								<div class="row">
+<!-- 									 <div class="slider-nav"> -->
+<!-- 				                        <div class="left"><i class="fa fa-angle-left"></i></div> -->
+<!-- 				                        <div class="right"><i class="fa fa-angle-right"></i></div> -->
+<!-- 				                    </div> -->
 									<div class="col-sm-12">
 										<div class="img-box">
 											<a href="/status/orImg?path=${recentDate}&realName=${recentImage}" data-gal="prettyPhoto[galleryName]" class="img-open"><i class="fa fa-search-plus"></i></a> <img src="/status/smImg?path=${recentDate}&realName=${recentImage}" class="img-responsive" alt="">
@@ -226,21 +230,25 @@
 						var $selectTime = $selectBar.children().eq(0);
 						var data = JSON.parse(json);
 
-						$selectBar.attr("title", "Select Time");
-						$selectTime.html("Select Time");
+						$("ul.dropdown-menu").html(data.menu);
+						$('select').html(data.select);
+						$('select').selectpicker();
+						
+						var $lastChild = $(".timeSelect > option:last-child");
+						$selectBar.attr("title", $lastChild.html());
+						$selectTime.html($lastChild.html());
+						
 						if (data.size === '1') { // 만약 데이터가 없다면 image select 불가능
 							$(".timeSelect").attr("disabled", "disabled");
 							$(".form-group > div").addClass("disabled");
 							$(".form-group > div > button").addClass("disabled");
 						} else { // 데이터가 있다면 image select 가능
+							$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + $lastChild.html());
+							$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + $lastChild.html());
 							$(".timeSelect").removeAttr("disabled");
 							$(".form-group > div").removeClass("disabled");
 							$(".form-group > div > button").removeClass("disabled");
 						}
-
-						$("ul.dropdown-menu").html(data.menu);
-						$('select').html(data.select);
-						$('select').selectpicker();
 
 						$(document).on("change", $selectTime, function(e) {
 							var fileName = $selectTime.html();
