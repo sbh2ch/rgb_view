@@ -30,9 +30,9 @@
 
 <!-- Respond.js and HTML shiv provide HTML5 support in older browsers like IE9 and 8 -->
 <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
 
 </head>
 <script> 
@@ -78,6 +78,10 @@
 				<div class="collapse navbar-collapse" id="main-navigation">         <!-- Main Menu -->
                     <ul class="nav navbar-nav navbar-right">
                         <li class="active"><a href="#">RGB</a>
+                        </li>
+                        <li><a href="#">need to dev</a>        
+                        </li>
+                        <li><a href="#">need to dev</a>        
                         </li>
                         <li><a href="#">need to dev</a>        
                         </li>

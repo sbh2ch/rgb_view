@@ -115,7 +115,7 @@
 						</div>
 						<div class="col-sm-6">
 							<div class="form-group">
-								<select class="timeSelect" tabindex="-98">
+								<select class="timeSelect" tabindex="-98" disabled="disabled">
 									<option>Select Time</option>
 								</select>
 							</div>
@@ -137,37 +137,6 @@
 											<a href="images/empty.png" data-gal="prettyPhoto[galleryName]" class="img-open"><i class="fa fa-search-plus"></i></a> <img src="images/empty.png" class="img-responsive" alt="">
 										</div>
 									</div>
-									<div class="col-sm-12">
-								        <div class="carousel slide" id="carousel">
-								            <!-- Indicators -->
-								            <ol class="carousel-indicators">
-								                <li class="active" data-slide-to="0" data-target="#carousel"></li>
-								                <li data-slide-to="1" data-target="#carousel"></li>
-								            </ol>
-								
-								            <!-- Wrapper for slides -->
-								            <div class="carousel-inner">
-								                <div class="item active">
-								                    <div class="img-box">
-														<a href="images/empty.png" data-gal="prettyPhoto[galleryName]" class="img-open"><i class="fa fa-search-plus"></i></a> <img src="images/empty.png" class="img-responsive" alt="">
-													</div>
-								                </div>
-								                <div class="item">
-								                    <div class="img-box">
-														<a href="images/empty.png" data-gal="prettyPhoto[galleryName]" class="img-open"><i class="fa fa-search-plus"></i></a> <img src="images/empty.png" class="img-responsive" alt="">
-													</div>
-								                </div>
-								            </div>
-								
-								            <!-- Controls -->
-								            <a class="left carousel-control" data-slide="prev" href="#carousel">
-								                <i class="fa fa-angle-left"></i>
-								            </a>
-								            <a class="right carousel-control" data-slide="next" href="#carousel">
-								                <i class="fa fa-angle-right"></i>
-								            </a>
-								        </div>
-								    </div>
 								</div>
 							</fieldset>
 						</div>
@@ -228,14 +197,13 @@
 
 	<script type="text/javascript">
 		$(document).ready(function() {
-			var imgIdx = ${imageIdx};
+// 			$(document).bind("contextmenu", function(){return false;})	//오른쪽 클릭 방지
+// 			$(document).bind("mousedown", function(){return false;})	//드래그 방지
+			var imgIdx = 0;
+			var totalIdx = 0;
 			var $selectBar = $(".form-group > div > button");
 			var $selectTime = $selectBar.children().eq(0);
-			$('.carousel').carousel({
-				interval: false,
-				wrap: false
-			});
-			
+			var imgName = "";
 
 			/* datePicker 허용 키 외 입력 방지 코드 */
 			$("#dPicker").keydown(function(e) {
@@ -257,17 +225,39 @@
 					}
 				}
 			});
-			
-			$(".slider-nav .left").click(function(e){
-				console.log('left click');
-			});
-			$(".slider-nav .right").click(function(e){
-				console.log('right click');
-			});
+			 
 
 			/* datePick 이후 노드 동적 생성 및 동적 이벤트 생성 */
 			$(".hasDatepicker").change(function(event) {
 				var date = "/" + $(this).val().split("/")[2] + $(this).val().split("/")[0] + "/" + $(this).val().split("/")[1] + "/";
+				var $legend = $("fieldset > legend");
+
+				/* <<< 클릭 이벤트 */
+				$(".slider-nav .left").unbind('click').click(function(e){
+					if(imgIdx <= 1)
+						return;
+					imgIdx--;
+					imgName = $("select.timeSelect").children().eq(imgIdx).html();		
+					
+					$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + imgName);
+					$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + imgName);
+					$legend.html(imgName);
+					$selectTime.html(imgName);
+				});
+				
+				/* >>> 클릭 이벤트 */
+				$(".slider-nav .right").unbind('click').click(function(e){
+					if(imgIdx >= totalIdx)
+						return;
+					imgIdx++;
+					imgName = $("select.timeSelect").children().eq(imgIdx).html();		
+					
+					$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + imgName);
+					$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + imgName);
+					$legend.html(imgName);
+					$selectTime.html(imgName);
+				});
+				
 				$.ajax({ // 날짜에 해당하는 사진 가져오는 ajax
 					url : 'ajax/date',
 					type : 'post',
@@ -278,15 +268,18 @@
 					success : function(json) {
 						$selectBar = $(".form-group > div > button");
 						$selectTime = $selectBar.children().eq(0);
-						var $legend = $("fieldset > legend");
 						var data = JSON.parse(json);
 						
+						/* 인덱스 보정 */
 						imgIdx = data.size -1;
+						totalIdx = data.size -1;
 
 						/* 불러온 JSON으로 selectPicker 생성 */
 						$("ul.dropdown-menu").html(data.menu);
 						$('select').html(data.select);
 						$('select').selectpicker();
+						
+						
 						
 						/* 선택 일자 중 가장 늦은시간 사진 불러오기 만약 자료가 없다면 Select Time을 불러온다 */
 						var $lastChild = $("select.timeSelect").children().eq(imgIdx);
@@ -297,7 +290,6 @@
 						$legend.html($lastChild.html());
 						
 						/* 버튼 활성화 판단 */
-						console.log('data size',data.size);
 						if (data.size == '1') { // 만약 데이터가 없다면 image select 불가능
 							$("div.img-box > a").attr("href", "images/empty.png");
 							$("div.img-box > img").attr("src", "images/empty.png");
@@ -313,25 +305,26 @@
 							$(".form-group > div > button").removeClass("disabled");
 						}
 						
-						/* 동적 DOM 이벤트 할당 */
-						$(document).on("change", $selectTime, function(e) {
-							var fileName = $selectTime.html();
+						/* select time에서 클릭으로 변경 시 imgIdx 설정 */
+						$("ul.inner > li").click(function() {
+							var fileName = $(this)[0].innerText;
+							
 							if (fileName !== 'Select Time') {
 								$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + fileName);
 								$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + fileName);
-								$legend.html($selectTime.html());
+								$legend.html(fileName);
 							} else {
 								$("div.img-box > a").attr("href", "images/empty.png");
 								$("div.img-box > img").attr("src", "images/empty.png");
-// 								$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + $selectTime.html());
-// 								$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + $selectTime.html());
 							}
-						});
+							$selectTime.html(fileName);
+					    	imgIdx = $(this).index();
+					    });
 					}
 				})
 			});
 		});
-	</script>
+	</script>	
 </body>
 
 </html>
