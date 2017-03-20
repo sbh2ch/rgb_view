@@ -124,7 +124,7 @@
 							<fieldset>
 								<legend>RGB Image</legend>
 								<div class="row">
-									<div class="slider-nav">
+									<div class="slider-nav" style="margin-top:0px">
 										<div class="left">
 											<i class="fa fa-angle-left"></i>
 										</div>
@@ -230,7 +230,6 @@
 			/* datePick 이후 노드 동적 생성 및 동적 이벤트 생성 */
 			$(".hasDatepicker").change(function(event) {
 				var date = "/" + $(this).val().split("/")[2] + $(this).val().split("/")[0] + "/" + $(this).val().split("/")[1] + "/";
-				var $legend = $("fieldset > legend");
 
 				/* <<< 클릭 이벤트 */
 				$(".slider-nav .left").unbind('click').click(function(e){
@@ -241,7 +240,6 @@
 					
 					$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + imgName);
 					$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + imgName);
-					$legend.html(imgName);
 					$selectTime.html(imgName);
 				});
 				
@@ -254,7 +252,6 @@
 					
 					$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + imgName);
 					$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + imgName);
-					$legend.html(imgName);
 					$selectTime.html(imgName);
 				});
 				
@@ -286,9 +283,6 @@
 						$selectBar.attr("title", $lastChild.html());
 						$selectTime.html($lastChild.html());
 						
-						/* legend 필드값 변경 */
-						$legend.html($lastChild.html());
-						
 						/* 버튼 활성화 판단 */
 						if (data.size == '1') { // 만약 데이터가 없다면 image select 불가능
 							$("div.img-box > a").attr("href", "images/empty.png");
@@ -296,7 +290,6 @@
 							$(".timeSelect").attr("disabled", "disabled");
 							$(".form-group > div").addClass("disabled");
 							$(".form-group > div > button").addClass("disabled");
-							$legend.html("RGB Image");
 						} else { // 데이터가 있다면 image select 가능
 							$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + $lastChild.html());
 							$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + $lastChild.html());
@@ -312,7 +305,6 @@
 							if (fileName !== 'Select Time') {
 								$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + fileName);
 								$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + fileName);
-								$legend.html(fileName);
 							} else {
 								$("div.img-box > a").attr("href", "images/empty.png");
 								$("div.img-box > img").attr("src", "images/empty.png");

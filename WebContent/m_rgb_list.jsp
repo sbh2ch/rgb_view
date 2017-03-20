@@ -35,12 +35,11 @@
 <![endif]-->
 
 </head>
-<script> 
-	/* pc, mobile 구분  */
+<script>
 	var filter = "win16|win32|win64|mac|macintel"; 
 	if ( navigator.platform ) { 
-		if ( filter.indexOf( navigator.platform.toLowerCase() ) >= 0 ) { 
-			window.location.href="http://222.236.46.37:8080/status/rgbList.do";
+		if ( filter.indexOf( navigator.platform.toLowerCase() ) < 0 ) { 
+			window.location.href="http://222.236.46.37:8080/status/m_rgbList.do";
 		}
 	}
 
@@ -124,9 +123,17 @@
 							<fieldset>
 								<legend>RGB Image</legend>
 								<div class="row">
+									<div class="slider-nav" style="margin-top:0px">
+										<div class="left">
+											<i class="fa fa-angle-left"></i>
+										</div>
+										<div class="right">
+											<i class="fa fa-angle-right"></i>
+										</div>
+									</div>
 									<div class="col-sm-12">
 										<div class="img-box">
-											<a href="/status/orImg?path=${recentDate}&realName=${recentImage}" data-gal="prettyPhoto[galleryName]" class="img-open"><i class="fa fa-search-plus"></i></a> <img src="/status/smImg?path=${recentDate}&realName=${recentImage}" class="img-responsive" alt="">
+											<a href="images/empty.png" data-gal="prettyPhoto[galleryName]" class="img-open"><i class="fa fa-search-plus"></i></a> <img src="images/empty.png" class="img-responsive" alt="">
 										</div>
 									</div>
 								</div>
@@ -179,10 +186,16 @@
 
 	<script type="text/javascript">
 		$(document).ready(function() {
+// 			$(document).bind("contextmenu", function(){return false;})	//오른쪽 클릭 방지
+// 			$(document).bind("mousedown", function(){return false;})	//드래그 방지
+			var imgIdx = 0;
+			var totalIdx = 0;
+			var $selectBar = $(".form-group > div > button");
+			var $selectTime = $selectBar.children().eq(0);
+			var imgName = "";
 
 			/* datePicker 허용 키 외 입력 방지 코드 */
 			$("#dPicker").keydown(function(e) {
-					console.log(e.keyCode);
 				if (e.keyCode <= 57 && e.keyCode >= 48) { // qwerty 0-9 제외
 					return;
 				} else if (e.keyCode <= 105 && e.keyCode >= 96) { // 키패드 0-9 제외
@@ -201,10 +214,36 @@
 					}
 				}
 			});
+			 
 
 			/* datePick 이후 노드 동적 생성 및 동적 이벤트 생성 */
 			$(".hasDatepicker").change(function(event) {
 				var date = "/" + $(this).val().split("/")[2] + $(this).val().split("/")[0] + "/" + $(this).val().split("/")[1] + "/";
+
+				/* <<< 클릭 이벤트 */
+				$(".slider-nav .left").unbind('click').click(function(e){
+					if(imgIdx <= 1)
+						return;
+					imgIdx--;
+					imgName = $("select.timeSelect").children().eq(imgIdx).html();		
+					
+					$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + imgName);
+					$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + imgName);
+					$selectTime.html(imgName);
+				});
+				
+				/* >>> 클릭 이벤트 */
+				$(".slider-nav .right").unbind('click').click(function(e){
+					if(imgIdx >= totalIdx)
+						return;
+					imgIdx++;
+					imgName = $("select.timeSelect").children().eq(imgIdx).html();		
+					
+					$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + imgName);
+					$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + imgName);
+					$selectTime.html(imgName);
+				});
+				
 				$.ajax({ // 날짜에 해당하는 사진 가져오는 ajax
 					url : 'ajax/date',
 					type : 'post',
@@ -213,41 +252,60 @@
 						path : date // date 값 json 으로 전달
 					},
 					success : function(json) {
-						var $selectBar = $(".form-group > div > button");
-						var $selectTime = $selectBar.children().eq(0);
+						$selectBar = $(".form-group > div > button");
+						$selectTime = $selectBar.children().eq(0);
 						var data = JSON.parse(json);
+						
+						/* 인덱스 보정 */
+						imgIdx = data.size -1;
+						totalIdx = data.size -1;
 
-						$selectBar.attr("title", "Select Time");
-						$selectTime.html("Select Time");
-						if (data.size === '1') { // 만약 데이터가 없다면 image select 불가능
+						/* 불러온 JSON으로 selectPicker 생성 */
+						$("ul.dropdown-menu").html(data.menu);
+						$('select').html(data.select);
+						$('select').selectpicker();
+						
+						
+						
+						/* 선택 일자 중 가장 늦은시간 사진 불러오기 만약 자료가 없다면 Select Time을 불러온다 */
+						var $lastChild = $("select.timeSelect").children().eq(imgIdx);
+						$selectBar.attr("title", $lastChild.html());
+						$selectTime.html($lastChild.html());
+						
+						/* 버튼 활성화 판단 */
+						if (data.size == '1') { // 만약 데이터가 없다면 image select 불가능
+							$("div.img-box > a").attr("href", "images/empty.png");
+							$("div.img-box > img").attr("src", "images/empty.png");
 							$(".timeSelect").attr("disabled", "disabled");
 							$(".form-group > div").addClass("disabled");
 							$(".form-group > div > button").addClass("disabled");
 						} else { // 데이터가 있다면 image select 가능
+							$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + $lastChild.html());
+							$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + $lastChild.html());
 							$(".timeSelect").removeAttr("disabled");
 							$(".form-group > div").removeClass("disabled");
 							$(".form-group > div > button").removeClass("disabled");
 						}
-
-						$("ul.dropdown-menu").html(data.menu);
-						$('select').html(data.select);
-						$('select').selectpicker();
-
-						$(document).on("change", $selectTime, function(e) {
-							var fileName = $selectTime.html();
+						
+						/* select time에서 클릭으로 변경 시 imgIdx 설정 */
+						$("ul.inner > li").click(function() {
+							var fileName = $(this)[0].innerText;
+							
 							if (fileName !== 'Select Time') {
-								$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + $selectTime.html());
-								$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + $selectTime.html());
+								$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + fileName);
+								$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + fileName);
 							} else {
-// 								$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + $selectTime.html());
-// 								$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + $selectTime.html());
+								$("div.img-box > a").attr("href", "images/empty.png");
+								$("div.img-box > img").attr("src", "images/empty.png");
 							}
-						});
+							$selectTime.html(fileName);
+					    	imgIdx = $(this).index();
+					    });
 					}
 				})
 			});
 		});
-	</script>
+	</script>	
 </body>
 
 </html>

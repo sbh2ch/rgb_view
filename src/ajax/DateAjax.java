@@ -19,8 +19,6 @@ public class DateAjax extends HttpServlet {
 		PrintWriter out = resp.getWriter();
 		String select = "";
 		String menu = "";
-		String indicators = "";
-		String slides = "";
 		String path = "f:/br_kosc" + req.getParameter("path");
 		File dir = new File(path);
 
@@ -30,13 +28,11 @@ public class DateAjax extends HttpServlet {
 
 		if (dir.exists()) { // 선택 디렉토리가 존재시
 			for (File image : dir.listFiles()) {
-				System.out.println(req.getParameter("path")+":"+dir.getName()+"++++"+image.getName());
-				
 				menu += "<li data-original-index='" + i++ + "'><a tabindex='0' class='' data-tokens='null' role='option' aria-disabled='false' aria-selected='false'><span class='text'>" + image.getName() + "</span><span class='glyphicon glyphicon-ok check-mark'></span></a></li>";
 				select += "<option>" + image.getName() + "</option>";
 			}
 		}
-		
+
 		String json = "{\"menu\" : \"" + menu + "\",\"select\" :\"" + select + "\", \"size\" : \"" + i + "\"}";
 		out.print(json);
 		return;
