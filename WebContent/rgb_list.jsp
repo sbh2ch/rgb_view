@@ -116,7 +116,7 @@
 						<div class="col-sm-6">
 							<div class="form-group">
 								<select class="timeSelect" tabindex="-98" disabled="disabled">
-									<option>Select Time</option>
+									<option>${recentImage}</option>
 								</select>
 							</div>
 						</div>
@@ -124,7 +124,7 @@
 							<fieldset>
 								<legend>RGB Image</legend>
 								<div class="row">
-									<div class="slider-nav" style="margin-top:0px">
+									<div class="slider-nav" style="margin-top:0px; visibility: hidden;">
 										<div class="left">
 											<i class="fa fa-angle-left"></i>
 										</div>
@@ -134,7 +134,10 @@
 									</div>
 									<div class="col-sm-12">
 										<div class="img-box">
-											<a href="images/empty.png" data-gal="prettyPhoto[galleryName]" class="img-open"><i class="fa fa-search-plus"></i></a> <img src="images/empty.png" class="img-responsive" alt="">
+											<a href="/status/orImg?path=${recentDate}&realName=${recentImage}" data-gal="prettyPhoto[galleryName]" class="img-open">
+												<i class="fa fa-search-plus"></i>
+											</a> 
+											<img src="/status/smImg?path=${recentDate}&realName=${recentImage}" class="img-responsive" alt="">
 										</div>
 									</div>
 								</div>
@@ -230,7 +233,7 @@
 			/* datePick 이후 노드 동적 생성 및 동적 이벤트 생성 */
 			$(".hasDatepicker").change(function(event) {
 				var date = "/" + $(this).val().split("/")[2] + $(this).val().split("/")[0] + "/" + $(this).val().split("/")[1] + "/";
-
+				
 				/* <<< 클릭 이벤트 */
 				$(".slider-nav .left").unbind('click').click(function(e){
 					if(imgIdx <= 1)
@@ -285,12 +288,14 @@
 						
 						/* 버튼 활성화 판단 */
 						if (data.size == '1') { // 만약 데이터가 없다면 image select 불가능
+							$("div.slider-nav").css({'visibility':'hidden'});
 							$("div.img-box > a").attr("href", "images/empty.png");
 							$("div.img-box > img").attr("src", "images/empty.png");
 							$(".timeSelect").attr("disabled", "disabled");
 							$(".form-group > div").addClass("disabled");
 							$(".form-group > div > button").addClass("disabled");
 						} else { // 데이터가 있다면 image select 가능
+							$("div.slider-nav").css({'visibility':'visible'});
 							$("div.img-box > a").attr("href", "/status/orImg?path=" + date + "&realName=" + $lastChild.html());
 							$("div.img-box > img").attr("src", "/status/smImg?path=" + date + "&realName=" + $lastChild.html());
 							$(".timeSelect").removeAttr("disabled");
